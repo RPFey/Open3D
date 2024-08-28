@@ -207,7 +207,18 @@ void pybind_integration_definitions(py::module &m) {
             .def("extract_voxel_point_cloud",
                  &ScalableTSDFVolume::ExtractVoxelPointCloud,
                  "Debug function to extract the voxel data into a point "
-                 "cloud.");
+                 "cloud.")
+            .def("tsdf_at", [](ScalableTSDFVolume &vol, Eigen::Ref<const Eigen::Matrix<float, Eigen::Dynamic, 3, Eigen::RowMajor>> points){
+                        py::gil_scoped_release release;
+
+                        int num_potins = points.rows();
+                        Eigen::Matrix<float, 1, Eigen::Dynamic, Eigen::RowMajor> distances(num_potins);
+
+                        // multi threading
+                        vol.QueryTSDF(points, distances);
+
+                        return distances;
+                });
     docstring::ClassMethodDocInject(m_integration, "ScalableTSDFVolume",
                                     "extract_voxel_point_cloud");
 }

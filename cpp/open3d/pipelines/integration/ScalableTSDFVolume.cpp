@@ -436,7 +436,18 @@ double ScalableTSDFVolume::GetTSDFAt(const Eigen::Vector3d &p) {
                    r(1) * ((1 - r(2)) * f[2] + r(2) * f[6]));
 }
 
-}  // namespace integration
-}  // namespace pipelines
+void  ScalableTSDFVolume::QueryTSDF(Eigen::Ref<const Eigen::Matrix<float, Eigen::Dynamic, 3, Eigen::RowMajor>> points,
+                    Eigen::Ref<Eigen::Matrix<float, 1, Eigen::Dynamic, Eigen::RowMajor>> tsdfs) {
 
+    int num_points = points.rows();
+
+    #pragma omp parallel for shared(points, tsdfs) num_threads(8)
+    for(int i = 0; i < num_points; i++){
+        Eigen::Vector3d p = points.row(i).cast<double>();
+        tsdfs(0, i) = GetTSDFAt(p);  
+    }
+}  
+
+}// namespace integration
+}  // namespace pipelines
 }  // namespace open3d

@@ -61,6 +61,8 @@ public:
     void Integrate(const geometry::RGBDImage &image,
                    const camera::PinholeCameraIntrinsic &intrinsic,
                    const Eigen::Matrix4d &extrinsic) override;
+    void QueryTSDF(Eigen::Ref<const Eigen::Matrix<float, Eigen::Dynamic, 3, Eigen::RowMajor>> points,
+                    Eigen::Ref<Eigen::Matrix<float, 1, Eigen::Dynamic, Eigen::RowMajor>> tsdfs);
     std::shared_ptr<geometry::PointCloud> ExtractPointCloud() override;
     std::shared_ptr<geometry::TriangleMesh> ExtractTriangleMesh() override;
     /// Debug function to extract the voxel data into a point cloud.
@@ -91,7 +93,7 @@ private:
 
     Eigen::Vector3d GetNormalAt(const Eigen::Vector3d &p);
 
-    double GetTSDFAt(const Eigen::Vector3d &p);
+    double GetTSDFAt(const Eigen::Vector3d &p) ;
 };
 
 }  // namespace integration
